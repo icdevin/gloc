@@ -31,16 +31,34 @@ type Result struct {
 	Total     LanguageStats
 }
 
+// IsGitRef checks if the input looks like a git reference (hash or branch name)
+func IsGitRef(input string) bool {
+	// Check if it's a hex string (git hash) - at least 7 chars for short hash
+	if len(input) >= 7 && len(input) <= 40 {
+		isHex := true
+		for _, c := range input {
+			if !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
+				isHex = false
+				break
+			}
+		}
+		if isHex {
+			return true
+		}
+	}
+	return false
+}
+
 // Run executes cloc on the given path and returns parsed results
-func Run(path string) (*Result, error) {
+func Run(path string, isGit bool) (*Result, error) {
 	// First, get summary by language
-	summaryResult, err := runClocSummary(path)
+	summaryResult, err := runClocSummary(path, isGit)
 	if err != nil {
 		return nil, err
 	}
 
 	// Then, get file-level details
-	fileResult, err := runClocByFile(path)
+	fileResult, err := runClocByFile(path, isGit)
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +69,13 @@ func Run(path string) (*Result, error) {
 	return summaryResult, nil
 }
 
-func runClocSummary(path string) (*Result, error) {
-	cmd := exec.Command("cloc", "--json", path)
+func runClocSummary(path string, isGit bool) (*Result, error) {
+	args := []string{"--json"}
+	if isGit {
+		args = append(args, "--git")
+	}
+	args = append(args, path)
+	cmd := exec.Command("cloc", args...)
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, err
@@ -94,8 +117,13 @@ func runClocSummary(path string) (*Result, error) {
 	return result, nil
 }
 
-func runClocByFile(path string) (*Result, error) {
-	cmd := exec.Command("cloc", "--json", "--by-file", path)
+func runClocByFile(path string, isGit bool) (*Result, error) {
+	args := []string{"--json", "--by-file"}
+	if isGit {
+		args = append(args, "--git")
+	}
+	args = append(args, path)
+	cmd := exec.Command("cloc", args...)
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, err

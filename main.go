@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/devin/gloc/cloc"
 	"github.com/devin/gloc/ui"
 )
 
@@ -25,17 +26,27 @@ func main() {
 		}
 	}
 
-	// Resolve to absolute path
-	absPath, err := filepath.Abs(path)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error resolving path: %v\n", err)
-		os.Exit(1)
-	}
+	// Check if it's a git reference
+	isGit := cloc.IsGitRef(path)
 
-	// Check if path exists
-	if _, err := os.Stat(absPath); os.IsNotExist(err) {
-		fmt.Fprintf(os.Stderr, "Path does not exist: %s\n", absPath)
-		os.Exit(1)
+	var absPath string
+	if isGit {
+		// For git refs, use as-is
+		absPath = path
+	} else {
+		// Resolve to absolute path
+		var err error
+		absPath, err = filepath.Abs(path)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error resolving path: %v\n", err)
+			os.Exit(1)
+		}
+
+		// Check if path exists
+		if _, err := os.Stat(absPath); os.IsNotExist(err) {
+			fmt.Fprintf(os.Stderr, "Path does not exist: %s\n", absPath)
+			os.Exit(1)
+		}
 	}
 
 	// Check if cloc is installed
@@ -46,7 +57,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	p := tea.NewProgram(ui.NewModel(absPath), tea.WithAltScreen())
+	p := tea.NewProgram(ui.NewModel(absPath, isGit), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)

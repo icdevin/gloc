@@ -18,6 +18,7 @@ type Model struct {
 	Width            int
 	Height           int
 	TargetPath       string
+	IsGit            bool
 	Err              error
 	SortCol          SortColumn
 	SortAsc          bool
@@ -35,9 +36,10 @@ type Model struct {
 }
 
 // NewModel creates a new model with the given path
-func NewModel(path string) Model {
+func NewModel(path string, isGit bool) Model {
 	return Model{
 		TargetPath:  path,
+		IsGit:       isGit,
 		Mode:        LanguageView,
 		SortCol:     SortByCode,
 		SortAsc:     false, // descending by default
@@ -53,16 +55,16 @@ type ClocResultMsg struct {
 }
 
 // RunCloc executes cloc and returns a command
-func RunCloc(path string) tea.Cmd {
+func RunCloc(path string, isGit bool) tea.Cmd {
 	return func() tea.Msg {
-		result, err := cloc.Run(path)
+		result, err := cloc.Run(path, isGit)
 		return ClocResultMsg{Result: result, Err: err}
 	}
 }
 
 // Init implements tea.Model
 func (m Model) Init() tea.Cmd {
-	return RunCloc(m.TargetPath)
+	return RunCloc(m.TargetPath, m.IsGit)
 }
 
 // ContentWidth returns the usable width for content (accounting for AppStyle padding)
