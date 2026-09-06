@@ -11,7 +11,7 @@ A colorful terminal UI for browsing code statistics, powered by [cloc](https://g
 Requires [cloc](https://github.com/AlDanial/cloc) to be installed.
 
 ```
-go install github.com/devin/gloc@latest
+go install github.com/icdevin/gloc@latest
 ```
 
 ## Usage

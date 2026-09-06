@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/devin/gloc/cloc"
-	"github.com/devin/gloc/ui"
+	"github.com/icdevin/gloc/cloc"
+	"github.com/icdevin/gloc/ui"
 )
 
 func main() {

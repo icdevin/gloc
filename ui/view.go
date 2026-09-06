@@ -8,7 +8,7 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
-	"github.com/devin/gloc/colors"
+	"github.com/icdevin/gloc/colors"
 )
 
 // View implements tea.Model

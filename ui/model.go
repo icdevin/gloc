@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/devin/gloc/cloc"
+	"github.com/icdevin/gloc/cloc"
 )
 
 // Model is the main application model

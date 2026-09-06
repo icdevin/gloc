@@ -1,4 +1,4 @@
-module github.com/devin/gloc
+module github.com/icdevin/gloc
 
 go 1.25.6
 
